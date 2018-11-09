@@ -1,0 +1,32 @@
+# .goreleaser.yml
+# Build customization
+builds:
+  -
+    main: cmd/cloudflare-ddns/main.go
+    binary: cfddns
+    goos:
+      - windows
+      - darwin
+      - linux
+      - freebsd
+    goarch:
+      - amd64
+      - 386
+      - arm
+      - arm64
+    goarm:
+      - 5
+      - 6
+      - 7
+
+    ignore:
+      - goos: darwin
+        goarch: 386
+archive:
+  format: tar.gz
+  format_overrides:
+    - goos: windows
+      format: zip
+  files:
+      - LICENSE
+      - CREDITS.md
