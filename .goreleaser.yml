@@ -29,4 +29,3 @@ archive:
       format: zip
   files:
       - LICENSE
-      - CREDITS.md
