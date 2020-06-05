@@ -9,10 +9,11 @@ import (
 
 // Options program options
 type Options struct {
-	APIKey       string `short:"k" long:"api-key" description:"Cloudflare account Global API Key (requires email to be set) (incompatible with token auth) [$CF_API_KEY]" env:"CF_API_KEY"`
-	Email        string `short:"e" long:"email" description:"Cloudflare account email (only necessary for api key auth) [$CF_EMAIL]" env:"CF_EMAIL"`
-	PrintVersion bool   `short:"v" long:"version" description:"Print program version and exit"`
-	APIToken     string `short:"t" long:"token" description:"API token [$CF_TOKEN]" env:"CF_TOKEN"`
+	APIKey       string   `short:"k" long:"api-key" description:"Cloudflare account Global API Key (requires email to be set) (incompatible with token auth) [$CF_API_KEY]" env:"CF_API_KEY"`
+	Email        string   `short:"e" long:"email" description:"Cloudflare account email (only necessary for api key auth) [$CF_EMAIL]" env:"CF_EMAIL"`
+	Domains      []string `short:"d" long:"domain" description:"Domains (or subdomains) to be updated [$CF_DOMAINS]" env:"CF_DOMAINS"`
+	PrintVersion bool     `short:"v" long:"version" description:"Print program version and exit"`
+	APIToken     string   `short:"t" long:"token" description:"API token [$CF_TOKEN]" env:"CF_TOKEN"`
 }
 
 // Populate the Options struct with data from environment variables and arguments
