@@ -5,15 +5,14 @@ import (
 	"net"
 	"os"
 	"os/signal"
-	"runtime"
 	"sync"
 	"time"
 
 	"github.com/claudio4/cloudflare-ddns/cmd/cloudflare-ddns/internal/options"
+	"github.com/claudio4/cloudflare-ddns/cmd/cloudflare-ddns/internal/unixsignals"
 	"github.com/claudio4/cloudflare-ddns/pkg/cloudflare"
 	"github.com/claudio4/cloudflare-ddns/pkg/ip"
 	"github.com/rs/zerolog"
-	"golang.org/x/sys/unix"
 )
 
 var version = "internal"
@@ -89,9 +88,7 @@ func signalProxy() (sigproxyc chan os.Signal) {
 	go func() {
 		sigc := make(chan os.Signal, 1)
 		signal.Notify(sigc, os.Interrupt)
-		if runtime.GOOS != "windows" {
-			signal.Notify(sigc, unix.SIGTERM)
-		}
+		unixsignals.ListenUnixCloseSignals(sigc)
 
 		signal := <-sigc
 		logger.Info().
