@@ -62,6 +62,11 @@ func main() {
 	}
 }
 
+var (
+	oldIPv4 net.IP
+	oldIPv6 net.IP
+)
+
 func daemonMode() {
 	sigc := signalProxy()
 	ticker := time.Tick(opts.RefreshTime)
@@ -130,6 +135,12 @@ func updateIPv4(wg *sync.WaitGroup) {
 		Str("ip4", ip4.String()).
 		Msg("")
 
+	if ip4.Equal(oldIPv4) && !opts.ForceUpdate {
+		logger.Info().Msg("IPv4 didn't change, skipping update")
+		return
+	}
+	oldIPv4 = ip4
+
 	var dwg sync.WaitGroup
 	dwg.Add(len(opts.Domains))
 	for _, domain := range opts.Domains {
@@ -166,6 +177,11 @@ func updateIPv6(wg *sync.WaitGroup) {
 	logger.Info().
 		Str("ip6", ip6.String()).
 		Msg("")
+	if ip6.Equal(oldIPv6) && !opts.ForceUpdate {
+		logger.Info().Msg("IPv6 didn't change, skipping update")
+		return
+	}
+	oldIPv6 = ip6
 
 	var dwg sync.WaitGroup
 	dwg.Add(len(opts.Domains))

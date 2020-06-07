@@ -18,6 +18,7 @@ type Options struct {
 	APIToken        string        `short:"t" long:"token" value-name:"<token>" description:"API token" env:"CF_TOKEN"`
 	Domains         []string      `short:"d" long:"domain" value-name:"<domain.tld>" description:"Domains (or subdomains) to be updated" required:"true" env:"CF_DOMAINS"`
 	Email           string        `short:"e" long:"email" value-name:"<mail@example.cf>" description:"Cloudflare account email (only necessary for api key auth)" env:"CF_EMAIL"`
+	ForceUpdate     bool          `short:"f" long:"force" description:"Force update even if the IP didn't change" env:"CF_FORCE_UPDATE"`
 	RefreshTime     time.Duration `short:"r" long:"refresh-every" description:"Time between refreshing the IP on the domains (enables daemon mode)" env:"CF_REFRESH_EVERY"`
 	Resolvers       []string      `long:"resolver" value-name:"<server>:<port>" description:"DNS resolvers to be used" env:"CF_RESOLVER" default-mask:"Cloudflare DNS"`
 	LogInJSONFormat bool          `long:"json-log" description:"Format log as JSON" env:"CF_JSON_LOG"`
