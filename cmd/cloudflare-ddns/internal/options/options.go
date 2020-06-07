@@ -16,7 +16,7 @@ var (
 type Options struct {
 	APIKey          string        `short:"k" long:"api-key" value-name:"<key>" description:"Cloudflare account Global API Key (requires email to be set) (incompatible with token auth)" env:"CF_API_KEY"`
 	APIToken        string        `short:"t" long:"token" value-name:"<token>" description:"API token" env:"CF_TOKEN"`
-	Domains         []string      `short:"d" long:"domain" value-name:"<domain.tld>" description:"Domains (or subdomains) to be updated" required:"true" env:"CF_DOMAINS"`
+	Domains         []string      `short:"d" long:"domain" value-name:"<domain.tld>" description:"Domains (or subdomains) to be updated" env:"CF_DOMAINS"`
 	Email           string        `short:"e" long:"email" value-name:"<mail@example.cf>" description:"Cloudflare account email (only necessary for api key auth)" env:"CF_EMAIL"`
 	ForceUpdate     bool          `short:"f" long:"force" description:"Force update even if the IP didn't change" env:"CF_FORCE_UPDATE"`
 	RefreshTime     time.Duration `short:"r" long:"refresh-every" description:"Time between refreshing the IP on the domains (enables daemon mode)" env:"CF_REFRESH_EVERY"`
@@ -43,6 +43,9 @@ func (opts *Options) Populate() error {
 }
 
 func (opts *Options) validate() error {
+	if opts.PrintVersion {
+		return nil
+	}
 	if opts.APIToken != "" {
 		if opts.APIKey != "" || opts.Email != "" {
 			return errors.New("token auth and api key auth can not be used at the same time")
@@ -57,6 +60,9 @@ func (opts *Options) validate() error {
 	}
 	if opts.OnlyIPv4 && opts.OnlyIPv6 {
 		return errors.New("--only-ipv4 and --only-ipv6 can not be present at the same time")
+	}
+	if len(opts.Domains) == 0 {
+		return errors.New("no domains specified")
 	}
 
 	return nil
