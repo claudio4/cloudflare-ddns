@@ -1,9 +1,11 @@
-# .goreleaser.yml
-# Build customization
+before:
+  hooks:
+  - go mod download
+  - go-licenses save github.com/claudio4/cloudflare-ddns/cmd/cloudflare-ddns --save_path=LICENSES
 builds:
   -
     main: cmd/cloudflare-ddns/main.go
-    binary: cfddns
+    binary: cloudflare-ddns
     goos:
       - windows
       - darwin
@@ -18,7 +20,6 @@ builds:
       - 5
       - 6
       - 7
-
     ignore:
       - goos: darwin
         goarch: 386
@@ -27,5 +28,3 @@ archive:
   format_overrides:
     - goos: windows
       format: zip
-  files:
-      - LICENSE
