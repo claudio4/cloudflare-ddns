@@ -4,6 +4,8 @@ import (
 	"errors"
 	"fmt"
 	"net"
+	"strconv"
+	"strings"
 
 	cf "github.com/cloudflare/cloudflare-go"
 )
@@ -40,6 +42,29 @@ func (api *API) updateRecordContent(name, content string, recordType string) err
 	records, err := api.api.DNSRecords(zoneID, rr)
 	if err != nil {
 		return fmt.Errorf("error retriving zone records: %w", err)
+	}
+	if len(records) == 0 {
+		rr.Content = content
+		resp, err := api.api.CreateDNSRecord(zoneID, rr)
+		if err != nil {
+			return fmt.Errorf("error creating the record: %w", err)
+		}
+		if len(resp.Errors) > 0 {
+			var b strings.Builder
+			b.WriteString("error creating the record: ")
+			lastELement := len(resp.Errors) - 1
+			for i, err := range resp.Errors {
+				if i != 0 && i < lastELement {
+					b.WriteString("; ")
+				}
+				b.WriteString("(code ")
+				b.WriteString(strconv.Itoa(err.Code))
+				b.WriteRune(')')
+				b.WriteString(err.Message)
+			}
+			return errors.New(b.String())
+		}
+		return nil
 	}
 
 	rr = records[0]
