@@ -68,6 +68,9 @@ func (api *API) updateRecordContent(name, content string, recordType string) err
 	}
 
 	rr = records[0]
+	if rr.Content == content {
+		return nil
+	}
 	rr.Content = content
 	err = api.api.UpdateDNSRecord(zoneID, rr.ID, rr)
 	if err != nil {
