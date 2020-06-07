@@ -2,31 +2,42 @@ package options
 
 import (
 	"errors"
+	"time"
 
-	"github.com/caarlos0/env/v6"
 	"github.com/jessevdk/go-flags"
+)
+
+var (
+	ErrGratefulStop   = errors.New("no error ocurred but the app should be stopped")
+	ErrWithoutMessage = errors.New("an error ocurred but no message is required")
 )
 
 // Options program options
 type Options struct {
-	APIKey       string   `short:"k" long:"api-key" description:"Cloudflare account Global API Key (requires email to be set) (incompatible with token auth) [$CF_API_KEY]" env:"CF_API_KEY"`
-	Email        string   `short:"e" long:"email" description:"Cloudflare account email (only necessary for api key auth) [$CF_EMAIL]" env:"CF_EMAIL"`
-	Domains      []string `short:"d" long:"domain" description:"Domains (or subdomains) to be updated [$CF_DOMAINS]" env:"CF_DOMAINS"`
-	PrintVersion bool     `short:"v" long:"version" description:"Print program version and exit"`
-	APIToken     string   `short:"t" long:"token" description:"API token [$CF_TOKEN]" env:"CF_TOKEN"`
+	APIKey          string        `short:"k" long:"api-key" value-name:"<key>" description:"Cloudflare account Global API Key (requires email to be set) (incompatible with token auth)" env:"CF_API_KEY"`
+	APIToken        string        `short:"t" long:"token" value-name:"<token>" description:"API token" env:"CF_TOKEN"`
+	Domains         []string      `short:"d" long:"domain" value-name:"<domain.tld>" description:"Domains (or subdomains) to be updated" required:"true" env:"CF_DOMAINS"`
+	Email           string        `short:"e" long:"email" value-name:"<mail@example.cf>" description:"Cloudflare account email (only necessary for api key auth)" env:"CF_EMAIL"`
+	RefreshTime     time.Duration `short:"r" long:"refresh-every" description:"Time between refreshing the IP on the domains (enables daemon mode)" env:"CF_REFRESH_EVERY"`
+	Resolvers       []string      `long:"resolver" value-name:"<server>:<port>" description:"DNS resolvers to be used" env:"CF_RESOLVER" default-mask:"Cloudflare DNS"`
+	LogInJSONFormat bool          `long:"json-log" description:"Format log as JSON" env:"CF_JSON_LOG"`
+	OnlyIPv4        bool          `short:"4" long:"only-ipv4" description:"Only use IPv4 (A records)" env:"CF_ONLY_IPV4"`
+	OnlyIPv6        bool          `short:"6" long:"only-ipv6" description:"Only use IPv6" env:"CF_ONLY_IPV6"`
+	PrintVersion    bool          `short:"v" long:"version" description:"Print program version and exit"`
 }
 
 // Populate the Options struct with data from environment variables and arguments
 func (opts *Options) Populate() error {
-	err := env.Parse(opts)
+	_, err := flags.Parse(opts)
 	if err != nil {
-		return err
+		if ferr, ok := err.(*flags.Error); ok {
+			if ferr.Type == flags.ErrHelp {
+				return ErrGratefulStop
+			}
+		}
+		// the flag package automatically prints the error, so no more printing is required
+		return ErrWithoutMessage
 	}
-	_, err = flags.Parse(opts)
-	if err != nil {
-		return err
-	}
-
 	return opts.validate()
 }
 
@@ -42,6 +53,9 @@ func (opts *Options) validate() error {
 		if opts.APIKey == "" || opts.Email == "" {
 			return errors.New("api key auth requires both, api key and email")
 		}
+	}
+	if opts.OnlyIPv4 && opts.OnlyIPv6 {
+		return errors.New("--only-ipv4 and --only-ipv6 can not be present at the same time")
 	}
 
 	return nil
