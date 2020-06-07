@@ -21,7 +21,7 @@ func (api *API) UpdateARecord(name string, ip net.IP) error {
 }
 
 func (api *API) UpdateAAAARecord(name string, ip net.IP) error {
-	ip6 := ip.To4()
+	ip6 := ip.To16()
 	if ip6 == nil {
 		return ErrInvalidIPType
 	}
