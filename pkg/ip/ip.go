@@ -20,7 +20,7 @@ var (
 	ErrInvalidIPReceived = errors.New("the received IP is invalid")
 )
 
-const apiEndpoint = "https://api6.ipify.org/"
+const apiEndpoint = "https://api64.ipify.org/"
 
 func getIP(v version) (net.IP, error) {
 	req, err := http.NewRequest("GET", "https://api6.ipify.org/", nil)
