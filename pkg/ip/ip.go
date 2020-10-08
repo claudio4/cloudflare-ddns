@@ -7,9 +7,15 @@ import (
 	"io/ioutil"
 	"net"
 	"net/http"
+	"time"
 )
 
 type version int
+
+const (
+	apiIPv4Endpoint = "https://api.ipify.org/"
+	apiIPv6Endpoint = "https://api6.ipify.org/"
+)
 
 const (
 	v4 version = iota
@@ -20,17 +26,21 @@ var (
 	ErrInvalidIPReceived = errors.New("the received IP is invalid")
 )
 
-const apiEndpoint = "https://api6.ipify.org/"
+// HTTPClient is the client used to perform the http requests against the API
+var HTTPClient = &http.Client{
+	Timeout: 10 * time.Second,
+}
 
 func getIP(v version) (net.IP, error) {
-	req, err := http.NewRequest("GET", "https://api6.ipify.org/", nil)
-	if err != nil {
-		return nil, fmt.Errorf("error creating the request %w", err)
+	var endpoint string
+	if v == v4 {
+		endpoint = apiIPv4Endpoint
+	} else {
+		endpoint = apiIPv6Endpoint
 	}
-
-	res, err := httpDoIPVersionRestricted(req, v)
+	res, err := HTTPClient.Get(endpoint)
 	if err != nil {
-		return nil, fmt.Errorf("error fetching the IP %w", err)
+		return nil, fmt.Errorf("error fetching the IP: %w", err)
 	}
 
 	ipStr, err := ioutil.ReadAll(res.Body)
