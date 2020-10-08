@@ -1,5 +1,5 @@
 # cloudflare-ddns
-## Unoffical Cloudflare DDNS Client.
+## Unofficial Cloudflare DDNS Client.
 
 ### Features  
 :white_check_mark: Pv4 & IPv6 support  
