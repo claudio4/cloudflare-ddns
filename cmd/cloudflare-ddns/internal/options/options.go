@@ -19,11 +19,12 @@ type Options struct {
 	Domains         []string      `short:"d" long:"domain" value-name:"<domain.tld>" description:"Domains (or subdomains) to be updated" env:"CF_DOMAINS"`
 	Email           string        `short:"e" long:"email" value-name:"<mail@example.cf>" description:"Cloudflare account email (only necessary for api key auth)" env:"CF_EMAIL"`
 	ForceUpdate     bool          `short:"f" long:"force" description:"Force update even if the IP didn't change" env:"CF_FORCE_UPDATE"`
-	RefreshTime     time.Duration `short:"r" long:"refresh-every" description:"Time between refreshing the IP on the domains (enables daemon mode)" env:"CF_REFRESH_EVERY"`
+	RefreshTime     time.Duration `short:"r" long:"refresh-every" description:"Time between refreshing the IP on the domains (enables daemon mode),must specify unit 's' for seconds, 'm' for minutes, 'h' for hours and 'd' for days, ex: 5m" env:"CF_REFRESH_EVERY"`
 	Resolvers       []string      `long:"resolver" value-name:"<server>:<port>" description:"DNS resolvers to be used" env:"CF_RESOLVER" default-mask:"Cloudflare DNS"`
 	LogInJSONFormat bool          `long:"json-log" description:"Format log as JSON" env:"CF_JSON_LOG"`
 	OnlyIPv4        bool          `short:"4" long:"only-ipv4" description:"Only use IPv4 (A records)" env:"CF_ONLY_IPV4"`
 	OnlyIPv6        bool          `short:"6" long:"only-ipv6" description:"Only use IPv6" env:"CF_ONLY_IPV6"`
+	NoColors        bool          `long:"disable-colors" description:"disables colored output, always true for json log" env:"CF_DISABLE_COLORS"`
 	PrintVersion    bool          `short:"v" long:"version" description:"Print program version and exit"`
 }
 

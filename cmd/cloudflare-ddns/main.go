@@ -50,7 +50,7 @@ func main() {
 
 	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
 	if !opts.LogInJSONFormat {
-		logger = zerolog.New(zerolog.ConsoleWriter{Out: os.Stdout, TimeFormat: "03:04"}).With().Timestamp().Logger()
+		logger = zerolog.New(zerolog.ConsoleWriter{Out: os.Stdout, TimeFormat: "03:04", NoColor: opts.NoColors}).With().Timestamp().Logger()
 	} else {
 		logger = zerolog.New(os.Stdout).With().Timestamp().Logger()
 	}
@@ -90,15 +90,15 @@ func signalProxy() (sigproxyc chan os.Signal) {
 		signal.Notify(sigc, os.Interrupt)
 		unixsignals.ListenUnixCloseSignals(sigc)
 
-		signal := <-sigc
+		sig := <-sigc
 		logger.Info().
-			Str("signal", signal.String()).
+			Str("signal", sig.String()).
 			Msg("stop signal received, if an update is ongoing the program will close once finished, resend the signal to force stop")
-		sigproxyc <- signal
+		sigproxyc <- sig
 
-		signal = <-sigc
+		sig = <-sigc
 		logger.Info().
-			Str("signal", signal.String()).
+			Str("signal", sig.String()).
 			Msg("second close signal received, forcing stop...")
 		os.Exit(55)
 	}()
