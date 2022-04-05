@@ -13,8 +13,8 @@ import (
 type version int
 
 const (
-	apiIPv4Endpoint = "https://api.ipify.org/"
-	apiIPv6Endpoint = "https://api6.ipify.org/"
+	apiIPv4Endpoint = "https://ipv4.icanhazip.com/"
+	apiIPv6Endpoint = "https://ipv6.icanhazip.com/"
 )
 
 const (
