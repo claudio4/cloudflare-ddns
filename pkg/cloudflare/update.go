@@ -1,6 +1,7 @@
 package cloudflare
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"net"
@@ -39,13 +40,13 @@ func (api *API) updateRecordContent(name, content string, recordType string) err
 		Name: name,
 		Type: recordType,
 	}
-	records, err := api.api.DNSRecords(zoneID, rr)
+	records, err := api.api.DNSRecords(context.Background(), zoneID, rr)
 	if err != nil {
 		return fmt.Errorf("error retriving zone records: %w", err)
 	}
 	if len(records) == 0 {
 		rr.Content = content
-		resp, err := api.api.CreateDNSRecord(zoneID, rr)
+		resp, err := api.api.CreateDNSRecord(context.Background(), zoneID, rr)
 		if err != nil {
 			return fmt.Errorf("error creating the record: %w", err)
 		}
@@ -72,7 +73,7 @@ func (api *API) updateRecordContent(name, content string, recordType string) err
 		return nil
 	}
 	rr.Content = content
-	err = api.api.UpdateDNSRecord(zoneID, rr.ID, rr)
+	err = api.api.UpdateDNSRecord(context.Background(), zoneID, rr.ID, rr)
 	if err != nil {
 		return fmt.Errorf("error updating the record: %w", err)
 	}
